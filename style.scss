@@ -1,0 +1,36 @@
+// ==== 1. Base Color ====
+$base-color: green;
+
+// ==== 2. Tint (lighter) & Shade (darker) steps ====
+$light-steps: 99%, 96%, 89%, 77%, 62%, 50%;
+$dark-steps: 43%, 34%, 24%, 17%, 10%, 6%;
+
+// ==== 3. Tint function ====
+@function generate-tint($color, $lightness) {
+  $hue: hue($color);
+  $sat: saturation($color);
+  @return hsl($hue, $sat, $lightness);
+}
+
+// ==== 4. Shade function ====
+@function generate-shade($color, $lightness) {
+  $hue: hue($color);
+  $sat: saturation($color);
+  @return hsl($hue, $sat, $lightness);
+}
+
+// ==== 5. Output CSS variables to :root ====
+:root {
+    --primary: #{$base-color};
+  // Tints
+  @for $i from 1 through length($light-steps) {
+    --primary-light-#{$i}: #{generate-tint($base-color, nth($light-steps, $i))};
+  }
+
+  // Shades
+  @for $i from 1 through length($dark-steps) {
+    --primary-dark-#{$i}: #{generate-shade($base-color, nth($dark-steps, $i))};
+  }
+
+  
+}
