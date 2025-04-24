@@ -68,31 +68,64 @@ function generateColorPalette(inputColor) {
 
   // 🎯 Color presets generation
   const presets = {
-    "--complementary": chroma(inputColor).set("hsl.h", "+180").hex(),
-    "--analogous-1": chroma(inputColor).set("hsl.h", "-30").hex(),
-    "--analogous-2": chroma(inputColor).set("hsl.h", "+30").hex(),
-    "--triadic-1": chroma(inputColor).set("hsl.h", "+120").hex(),
-    "--triadic-2": chroma(inputColor).set("hsl.h", "-120").hex(),
-    "--tetradic-1": chroma(inputColor).set("hsl.h", "+90").hex(),
-    "--tetradic-2": chroma(inputColor).set("hsl.h", "-90").hex(),
+    analogic: [
+      chroma(inputColor).set("hsl.h", "-20").hex(),
+      chroma(inputColor).set("hsl.h", "+20").hex(),
+      chroma(inputColor).set("hsl.h", "+60").hex(),
+      chroma(inputColor).set("hsl.h", "-60").hex(),
+    ],
+    mono: [
+      chroma(inputColor)
+        .set("hsl.l", Math.max(0.1, chroma(inputColor).hsl()[2] - 0.2))
+        .hex(),
+      chroma(inputColor).brighten(1.5).saturate(1).hex(),
+      chroma(inputColor).brighten(0.7).saturate(0.5).hex(),
+      chroma(inputColor).set("hsl.l", 1).hex(),
+    ],
+    triade: [
+      chroma(inputColor).set("hsl.h", "+120").hex(),
+      chroma(inputColor).set("hsl.h", "-120").hex(),
+      chroma(inputColor).set("hsl.h", "+150").hex(),
+      chroma(inputColor).set("hsl.h", "-150").hex(),
+    ],
+    complementary: [
+      inputColor,
+      chroma(inputColor).brighten(1).hex(),
+      chroma(inputColor).set("hsl.h", "+180").hex(),
+      chroma(inputColor).set("hsl.h", "+180").darken(1).hex(),
+    ],
+    tetrade: [
+      chroma(inputColor).set("hsl.h", "+60").hex(),
+      chroma(inputColor).set("hsl.h", "+180").hex(),
+      chroma(inputColor).set("hsl.h", "-60").hex(),
+      chroma(inputColor).set("hsl.h", "-180").hex(),
+    ],
+    random: Array.from({ length: 4 }, () =>
+      chroma.random().saturate(1.5).brighten(1).hex()
+    ),
   };
 
-  Object.entries(presets).forEach(([label, value]) => {
-    const card = document.createElement("div");
-    card.className = "color-card";
-    card.style.backgroundColor = value;
-    card.style.color = getTextColor(value);
-    card.innerHTML = `
-      <div class="color-label">${label}</div>
-      <div class="color-value">${value.toUpperCase()}</div>`;
-    presetsCards.appendChild(card);
+  Object.entries(presets).forEach(([group, colors]) => {
+    colors.forEach((color, idx) => {
+      const label = `--${group}-${idx + 1}`;
 
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <span class="var-name">${label}:</span>
-      <span class="var-value">${value.toUpperCase()};</span>`;
-    presetsVars.appendChild(li);
+      const card = document.createElement("div");
+      card.className = "color-card";
+      card.style.backgroundColor = color;
+      card.style.color = getTextColor(color);
+      card.innerHTML = `
+        <div class="color-label">${group}</div>
+        <div class="color-value">${color.toUpperCase()}</div>`;
+      presetsCards.appendChild(card);
+
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span class="var-name">${label}:</span>
+        <span class="var-value">${color.toUpperCase()};</span>`;
+      presetsVars.appendChild(li);
+    });
   });
+  
 }
 
 // Input listener
