@@ -2,10 +2,6 @@ const lightSteps = [0.97, 0.94, 0.89, 0.77, 0.62, 0.5];
 const darkSteps = [0.4, 0.33, 0.22, 0.16, 0.09, 0.05];
 
 function generateColorPalette(inputColor) {
-  const inputHSL = chroma(inputColor).hsl();
-  const hue = inputHSL[0];
-  const sat = inputHSL[1];
-
   const paletteList = document.querySelector("#colorsArr");
   const variablesList = document.querySelector("#variablesList");
   const variablesTitle = document.querySelector("#variablesTitle");
@@ -22,8 +18,13 @@ function generateColorPalette(inputColor) {
 
   const getTextColor = (bg) => (chroma(bg).luminance() > 0.5 ? "#000" : "#fff");
 
-  const tints = lightSteps.map((l) => chroma.hsl(hue, sat, l).hex());
-  const shades = darkSteps.map((l) => chroma.hsl(hue, sat, l).hex());
+  // Updated logic using chroma.mix for accurate light/dark tints per input color
+  const tints = lightSteps.map((l) =>
+    chroma.mix("white", inputColor, 1 - l, "rgb").hex()
+  );
+  const shades = darkSteps.map((l) =>
+    chroma.mix("black", inputColor, 1 - l, "rgb").hex()
+  );
 
   const colors = [
     ...tints.map((v, i) => ({ label: `--primary-light-${i + 1}`, value: v })),
@@ -66,7 +67,7 @@ function generateColorPalette(inputColor) {
     <div class="color-value">${inputColor.toUpperCase()}</div>`;
   paletteList.appendChild(baseCard);
 
-  // 🎯 Color presets generation
+  // 🎯 Color presets generation (unchanged here — you can enhance separately if needed)
   const presets = {
     analogic: [
       chroma(inputColor).set("hsl.h", "-20").hex(),
@@ -107,8 +108,6 @@ function generateColorPalette(inputColor) {
 
   Object.entries(presets).forEach(([group, colors]) => {
     colors.forEach((color, idx) => {
-      const label = `--${group}-${idx + 1}`;
-
       const card = document.createElement("div");
       card.className = "color-card";
       card.style.backgroundColor = color;
@@ -117,15 +116,8 @@ function generateColorPalette(inputColor) {
         <div class="color-label">${group}</div>
         <div class="color-value">${color.toUpperCase()}</div>`;
       presetsCards.appendChild(card);
-
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span class="var-name">${label}:</span>
-        <span class="var-value">${color.toUpperCase()};</span>`;
-      presetsVars.appendChild(li);
     });
   });
-  
 }
 
 // Input listener
