@@ -175,7 +175,22 @@ input#colorInput {
   background-color: var(--btn-wrapper-bg);
   padding: 50px;
 }
-
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease-in-out;
+}
 .btn-primary {
   background-color: var(--primary);
   padding: 20px;
