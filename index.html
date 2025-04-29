@@ -10,11 +10,15 @@
   <body>
     <div class="container">
       <h1>🎨 RMC Color Palette Generator</h1>
-      <input
-        type="text"
-        id="colorInput"
-        placeholder="Enter a color (hex, name, rgb...)"
-      />
+
+      <div class="input-group">
+        <input
+          type="text"
+          id="colorInput"
+          placeholder="Enter a color (hex, name, rgb...)"
+        />
+        <input type="color" id="colorPicker" value="#155dfc" />
+      </div>
 
       <div id="colorsArr"></div>
 
@@ -36,6 +40,7 @@
         <ul id="presetsVars" class="variable-list"></ul>
       </div>
     </div>
+
     <script src="js/main.js"></script>
   </body>
 </html>

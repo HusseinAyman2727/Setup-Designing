@@ -18,7 +18,6 @@ function generateColorPalette(inputColor) {
 
   const getTextColor = (bg) => (chroma(bg).luminance() > 0.5 ? "#000" : "#fff");
 
-  // Updated logic using chroma.mix for accurate light/dark tints per input color
   const tints = lightSteps.map((l) =>
     chroma.mix("white", inputColor, 1 - l, "rgb").hex()
   );
@@ -31,7 +30,17 @@ function generateColorPalette(inputColor) {
     ...shades.map((v, i) => ({ label: `--primary-dark-${i + 1}`, value: v })),
   ];
 
-  // Primary color CSS variable
+  // ✅ Set CSS Variables in :root
+  const root = document.documentElement;
+  root.style.setProperty('--primary', inputColor);
+  tints.forEach((color, i) => {
+    root.style.setProperty(`--primary-light-${i + 1}`, color);
+  });
+  shades.forEach((color, i) => {
+    root.style.setProperty(`--primary-dark-${i + 1}`, color);
+  });
+
+  // 📝 Primary variable display
   const baseLi = document.createElement("li");
   baseLi.className = "base-primary";
   baseLi.innerHTML = `
@@ -39,7 +48,6 @@ function generateColorPalette(inputColor) {
     <span class="var-value">${inputColor.toUpperCase()};</span>`;
   variablesList.appendChild(baseLi);
 
-  // Primary palette colors
   colors.forEach((item) => {
     const card = document.createElement("div");
     card.className = "color-card";
@@ -57,7 +65,6 @@ function generateColorPalette(inputColor) {
     variablesList.appendChild(li);
   });
 
-  // Primary card
   const baseCard = document.createElement("div");
   baseCard.className = "color-card";
   baseCard.style.backgroundColor = inputColor;
@@ -67,7 +74,6 @@ function generateColorPalette(inputColor) {
     <div class="color-value">${inputColor.toUpperCase()}</div>`;
   paletteList.appendChild(baseCard);
 
-  // 🎯 Color presets generation (unchanged here — you can enhance separately if needed)
   const presets = {
     analogic: [
       chroma(inputColor).set("hsl.h", "-20").hex(),
@@ -107,7 +113,7 @@ function generateColorPalette(inputColor) {
   };
 
   Object.entries(presets).forEach(([group, colors]) => {
-    colors.forEach((color, idx) => {
+    colors.forEach((color) => {
       const card = document.createElement("div");
       card.className = "color-card";
       card.style.backgroundColor = color;
@@ -120,17 +126,38 @@ function generateColorPalette(inputColor) {
   });
 }
 
-// Input listener
-document.getElementById("colorInput").addEventListener("input", (e) => {
-  const value = e.target.value.trim();
-  const title = document.getElementById("variablesTitle");
+function resetDisplay() {
+  document.getElementById("variablesTitle").style.display = "none";
+  document.getElementById("variablesList").innerHTML = "";
+  document.getElementById("colorsArr").innerHTML = "";
+  document.getElementById("presetsSection").style.display = "none";
+}
 
+// 🔄 Input listeners & syncing
+const colorInput = document.getElementById("colorInput");
+const colorPicker = document.getElementById("colorPicker");
+
+// Sync on load
+window.addEventListener("DOMContentLoaded", () => {
+  const initialColor = colorInput.value.trim();
+  if (chroma.valid(initialColor)) {
+    generateColorPalette(initialColor);
+    colorPicker.value = chroma(initialColor).hex();
+  }
+});
+
+colorInput.addEventListener("input", (e) => {
+  const value = e.target.value.trim();
   if (chroma.valid(value)) {
     generateColorPalette(value);
+    colorPicker.value = chroma(value).hex();
   } else {
-    title.style.display = "none";
-    document.getElementById("variablesList").innerHTML = "";
-    document.getElementById("colorsArr").innerHTML = "";
-    document.getElementById("presetsSection").style.display = "none";
+    resetDisplay();
   }
+});
+
+colorPicker.addEventListener("input", (e) => {
+  const value = e.target.value;
+  colorInput.value = value;
+  generateColorPalette(value);
 });
